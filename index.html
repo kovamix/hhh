@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>评论动态加载</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<script src="jquery.js"></script>
+<script src="template.js"></script>
+
+</head>
+<body>
+	<div style="height:300px;"></div>
+	<div id="container">
+		<ul id="contentList">
+			<li class="comment">
+				<div class="left"><img src="./g1.jpg"></div>
+				<div class="right">
+					<div><span>传智雷老师</span>: <span>昨天 19:08:33</span> </div>
+					<div>上述知情人士透露，目前业内一些公司准备了专门的名单从电信运营商定向挖人，其筹码是数倍于运营商的薪酬、股权激励以及企业运营决策的自主权。</div>
+				</div>
+			</li>
+			<hr>
+			<li class="comment">
+				<div class="left"><img src="./g1.jpg"></div>
+				<div class="right">
+					<div><span>传智喵喵喵</span>: <span>昨天 19:08:33</span> </div>
+					<div>上述知情人士透露，目前业内一些公司准备了专门的名单从电信运营商定向挖人，其筹码是数倍于运营商的薪酬、股权激励以及企业运营决策的自主权。</div>
+				</div>
+			</li>
+			<hr>
+		</ul>
+		<div id="more">加载更多...</div>
+		<input type="hidden" id="last" value="0">
+	</div>
+
+</body>
+<script type="text/html" id="test">
+	{{each commentid as value i}}
+	<li class="comment">
+		<div class="left"><img src="{{value.userinfo.head}}"></div>
+		<div class="right">
+			<div><span>{{value.userinfo.nick}}</span>: <span>{{value.timeDifference}}</span> </div>
+			<div>{{value.content}}</div>
+		</div>
+	</li>
+	{{/each}}
+</script>
+</html>
+
+<script type="text/javascript">
+	var reqnum = 20;
+	$(function() {
+		getData(reqnum);
+		$('#more').on('click', function() {
+			if(reqnum >= 50) {
+				$(this).html("没有更多了！！")
+				return;
+			}
+			reqnum += 10;
+			getData(reqnum)
+		})
+
+	})
+
+	function getData(reqnum){
+		$.ajax({
+			type:"get",
+			url:"http://coral.qq.com/article/1983169624/comment",
+			data:{
+				commentid:'6280346786642608295',
+				tag:'',
+				reqnum:reqnum,
+			},
+			dataType:'jsonp',
+			jsonp:'callback',
+			jsonpCallback:'mainComment',
+			success:function(data){
+				var str = template('test',data.data);
+				$("#contentList").html(str);
+			}
+		});
+	}
+</script>
+
+<!--
+         $.ajax({
+            url:'http://coral.qq.com/article/1983169624/comment',
+            type:'get',
+            data:{
+                commentid:'6280346786642608295',
+                tag:'',
+                reqnum:reqnum
+            },
+            dataType:'jsonp',
+            jsonp:'callback',
+            jsonpCallback:'mainComment', 
+            success:function(data){
+                var str = template('test',data.data);
+                $('#contentList').html(str);
+            }
+        })
+    }-->
